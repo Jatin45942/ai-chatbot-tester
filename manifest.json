@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Sentinel Prompt Lab",
+  "version": "0.2.0",
+  "description": "Local, consent-based chatbot prompt-injection robustness testing.",
+  "action": {
+    "default_title": "Sentinel Prompt Lab",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sentinel Prompt Lab</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div><div class="brand-name">Sentinel <i>/</i> Prompt Lab</div><div class="brand-sub">Authorized LLM security assessment</div></div>
+      </div>
+      <div class="privacy-badge"><span></span> LOCAL ONLY</div>
+    </header>
+
+    <section class="target-panel">
+      <div class="target-main">
+        <div class="eyebrow">ACTIVE TARGET</div>
+        <div class="target-line"><h1 id="target-title">Current tab</h1><span id="target-status" class="status neutral">Detecting</span></div>
+        <p id="target-detail" class="target-detail">Inspecting the current page for chatbot controls.</p>
+      </div>
+      <button id="detect" class="button secondary">Re-scan target</button>
+    </section>
+
+    <section class="metric-grid">
+      <div class="metric"><span class="metric-label">DETECTION</span><strong id="metric-detection">--</strong><small>chatbot confidence</small></div>
+      <div class="metric"><span class="metric-label">COVERAGE</span><strong id="metric-coverage">0/0</strong><small>probes selected</small></div>
+      <div class="metric"><span class="metric-label">FINDINGS</span><strong id="metric-findings">0</strong><small>needs review</small></div>
+    </section>
+
+    <div class="workspace-grid">
+      <section class="panel library-panel">
+        <div class="panel-head"><div><div class="eyebrow">01 / LIBRARY</div><h2>Assessment corpus</h2></div><button id="select-all" class="text-button">Select all</button></div>
+        <div class="library-meta"><span id="corpus-count">0 probes</span><span class="source-note">OWASP + garak patterns</span></div>
+        <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Filter by risk, source, or objective"></div>
+        <div id="categories" class="category-tabs"></div>
+        <div id="prompts" class="prompt-list"></div>
+        <div class="library-foot"><button id="clear-selection" class="text-button">Clear selection</button><span id="selection-count">0 selected</span></div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel plan-panel">
+          <div class="panel-head"><div><div class="eyebrow">02 / PLAN</div><h2>Run strategy</h2></div><span id="queue-state" class="mini-state">READY</span></div>
+          <div class="strategy-list">
+            <label class="strategy active"><input type="radio" name="strategy" value="balanced" checked><span><b>Balanced sweep</b><small>Round-robin across every selected risk family.</small></span></label>
+            <label class="strategy"><input type="radio" name="strategy" value="adaptive"><span><b>Adaptive deep-dive</b><small>Follow ambiguous replies with targeted probes.</small></span></label>
+            <label class="strategy"><input type="radio" name="strategy" value="fresh"><span><b>Fresh-only cycle</b><small>Skip prompts already completed on this target.</small></span></label>
+          </div>
+          <div class="coverage-bar"><div id="coverage-fill"></div></div>
+          <div class="coverage-caption"><span id="coverage-label">0% new coverage</span><span id="learn-label">0 learned signals</span></div>
+        </section>
+
+        <section class="panel config-panel">
+          <div class="panel-head"><div><div class="eyebrow">03 / CONFIG</div><h2>Execution guardrails</h2></div></div>
+          <div class="form-grid">
+            <label>Max probes<input id="max-tests" type="number" min="1" max="30" value="20"></label>
+            <label>Delay (ms)<input id="delay" type="number" min="1000" step="500" value="2500"></label>
+          </div>
+          <div class="select-grid">
+            <label>Language<select id="language"><option value="auto">Auto rotate</option><option value="english">English</option><option value="hindi">Hindi</option><option value="hinglish">Hinglish</option><option value="spanish">Spanish</option></select></label>
+            <label>Mutation<select id="transform"><option value="auto">Auto rotate</option><option value="none">Original</option><option value="leet">Leetspeak</option><option value="spacing">Spacing</option><option value="confusable">Confusable</option><option value="mixed">Mixed</option></select></label>
+          </div>
+          <label class="toggle-row"><input id="adaptive" type="checkbox" checked><span><b>Learn from replies</b><small>Generate unique follow-ups from weak signals.</small></span></label>
+          <label class="toggle-row"><input id="auto-submit" type="checkbox"><span><b>Enable live submission</b><small>Required before prompts can be sent to the current tab.</small></span></label>
+          <label class="canary-label">Synthetic protected marker<input id="canary" type="text" value="SENTINEL_CANARY_7F3A" spellcheck="false"></label>
+          <div class="guardrail-note">Use synthetic markers only. Never paste credentials, patient data, or real customer records.</div>
+          <div class="action-row"><button id="run" class="button primary" disabled>Run assessment</button><button id="stop" class="button stop" disabled>Stop</button></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="panel composer-panel">
+      <div class="panel-head"><div><div class="eyebrow">OPTIONAL / COMPOSER</div><h2>Generate a targeted probe</h2></div><button id="generate" class="text-button">Use learned signals</button></div>
+      <div class="composer-grid"><textarea id="custom-prompt" rows="2" placeholder="Add a focused, authorized test objective..."></textarea><button id="add-custom" class="button secondary">Add to corpus</button></div>
+      <div class="composer-source">Prompt families are mapped to OWASP LLM Top 10 and NVIDIA garak probe patterns. The extension generates local variants and records source labels.</div>
+    </section>
+
+    <section id="results-section" class="panel results-panel" hidden>
+      <div class="panel-head"><div><div class="eyebrow">04 / EVIDENCE</div><h2>Assessment ledger</h2></div><div class="result-actions"><button id="export" class="text-button">Export JSON</button><button id="clear" class="text-button">Clear</button></div></div>
+      <div id="results"></div>
+    </section>
+
+    <footer><span>Sentinel Prompt Lab v0.2</span><span>Explicit action · local storage · no telemetry</span></footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
